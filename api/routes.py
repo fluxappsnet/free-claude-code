@@ -127,9 +127,12 @@ async def probe_root(_auth=Depends(require_api_key)):
 
 
 @router.get("/health")
-async def health():
+async def health(settings: Settings = Depends(get_settings)):
     """Health check endpoint."""
-    return {"status": "healthy"}
+    return {
+        "status": "healthy",
+        "auth_enabled": bool(settings.anthropic_auth_token),
+    }
 
 
 @router.api_route("/health", methods=["HEAD", "OPTIONS"])

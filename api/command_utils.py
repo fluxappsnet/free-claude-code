@@ -36,6 +36,11 @@ def extract_command_prefix(command: str) -> str:
     if "`" in command or "$(" in command:
         return "command_injection_detected"
 
+    # Detect shell operators at start that could chain/inject commands
+    stripped = command.lstrip()
+    if stripped.startswith(("&&", "||", ";", "|", ">")):
+        return "command_injection_detected"
+
     try:
         parts = shlex.split(command, posix=False)
         if not parts:

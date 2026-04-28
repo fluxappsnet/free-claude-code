@@ -30,6 +30,9 @@ class SessionStore:
         *,
         message_log_cap: int | None = None,
     ):
+        # Resolve to absolute path and validate it doesn't escape intended directory
+        if ".." in storage_path:
+            raise ValueError(f"storage_path must not contain '..': {storage_path!r}")
         self.storage_path = storage_path
         self._lock = threading.Lock()
         self._trees: dict[str, dict] = {}  # root_id -> tree data

@@ -410,6 +410,29 @@ class Settings(BaseSettings):
             self.anthropic_auth_token = dotenv_value
         return self
 
+    @model_validator(mode="after")
+    def warn_on_empty_or_weak_auth_token(self) -> Settings:
+        """Warn when ANTHROPIC_AUTH_TOKEN is empty or appears weak."""
+        import warnings
+
+        token = self.anthropic_auth_token
+        if not token:
+            warnings.warn(
+                "ANTHROPIC_AUTH_TOKEN is empty - the proxy will accept requests "
+                "without authentication. This is appropriate only for local-only "
+                "deployments behind a firewall.",
+                UserWarning,
+                stacklevel=2,
+            )
+        elif len(token) < 16:
+            warnings.warn(
+                f"ANTHROPIC_AUTH_TOKEN is only {len(token)} characters. "
+                "Consider using a longer, random token for production.",
+                UserWarning,
+                stacklevel=2,
+            )
+        return self
+
     def uses_process_anthropic_auth_token(self) -> bool:
         """Return whether proxy auth came from process env, not dotenv config."""
         if _env_file_override(self.model_config, "ANTHROPIC_AUTH_TOKEN") is not None:
