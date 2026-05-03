@@ -56,7 +56,7 @@ uv python install 3.14
 ### 2. Clone And Configure
 
 ```bash
-git clone https://github.com/Alishahryar1/free-claude-code.git
+git clone https://github.com/fluxapps/free-claude-code.git
 cd free-claude-code
 cp .env.example .env
 ```
